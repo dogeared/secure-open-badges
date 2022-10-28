@@ -61,6 +61,7 @@ public class BadgeController {
     public @ResponseBody byte[] getBadge(
         @PathVariable String githubUser, @PathVariable String githubRepo, @PathVariable String badgeSlug
     ) {
+        // TODO - needs sanitization - duh
         try {
             GHRepository repository = githubService.getRepository(githubUser, githubRepo);
             GHCommit commit = githubService.getLatestVerifiedCommit(repository);

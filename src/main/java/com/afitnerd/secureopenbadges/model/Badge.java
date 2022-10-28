@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class Badge {
 
-    @JsonProperty("badge-id")
+    @JsonProperty("badge-slug")
     private String badgeSlug;
 
     @JsonProperty("start-date")
