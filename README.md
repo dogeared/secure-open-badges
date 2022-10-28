@@ -125,4 +125,13 @@ Each record in the file should have these keys:
 |-----|----------|-------------|
 | `badge-slug` | yes | the unique identifier for the badge |
 | `start-date` | yes | when the badge was issued |
-| `end-date` | no | when the badge expires
+| `end-date`   | no  | when the badge expires |
+
+## Issues & Concerns
+
+* Perhaps an authorized user shouldn't be able to issue a badge to themself. This could be managed by making sure
+the owner and committer are not the same, but that the committer is still in the list of authorized verifiers
+* What if an authorized verifier is no longer part of the organization? What if they delete their github account? On
+one hand, a new signed commit could be made from a current authorized verifier. It might be useful to have a set of
+dates indicating start and end date of service for an authorized verifier.
+* It should be easier to add new badges without having to rebuild and redeploy the app
