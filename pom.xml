@@ -15,7 +15,7 @@
     <description>secure-open-badges</description>
     <properties>
         <java.version>17</java.version>
-        <github-client.version>0.1.46</github-client.version>
+        <github-client.version>1.313</github-client.version>
     </properties>
     <dependencies>
         <dependency>
@@ -23,8 +23,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.spotify</groupId>
-            <artifactId>github-client</artifactId>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
             <version>${github-client.version}</version>
         </dependency>
 
