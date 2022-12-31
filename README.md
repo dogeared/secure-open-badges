@@ -42,7 +42,7 @@ Badges are ultimately images that are returned (after validation) from a running
 The format is:
 
 ```
-https://<base url>/api/v1/badge/user/<github user>/repo/<repo name>/badge/<badge slug>
+https://<base url>/api/v1/user/<github user>/repo/<repo name>/badge/<badge slug>
 ```
 
 The following checks are done before returning the badge:
