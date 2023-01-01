@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 
@@ -43,6 +44,16 @@ public class BadgeController {
         this.badgeVerifierService = badgeVerifierService;
         this.imageService = imageService;
     }
+
+    @PostConstruct
+    public void setup() {
+        try {
+            notFound = imageService.getImage("404");
+        } catch (IOException e) {
+            log.error("unable to pre-load 404 image, Error: {}", e.getMessage(), e);
+        }
+    }
+
 
     @GetMapping(value = BADGE_URI, produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getBadge(
