@@ -1,7 +1,5 @@
 package com.afitnerd.secureopenbadges.model;
 
-import com.afitnerd.secureopenbadges.controller.BadgeController;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.font.GlyphVector;
@@ -38,7 +36,7 @@ public class ImageBuilder {
     }
 
     public ImageBuilder font(String fontFamily, Integer fontAttribute, Integer fontSize) {
-        if (Font.SANS_SERIF.toLowerCase().equals(fontFamily.toLowerCase())) {
+        if (fontFamily == null || Font.SANS_SERIF.toLowerCase().equals(fontFamily.toLowerCase())) {
             fontFamily = Font.SANS_SERIF;
         } else if (Font.SERIF.toLowerCase().equals(fontFamily.toLowerCase())) {
             fontFamily = Font.SERIF;
