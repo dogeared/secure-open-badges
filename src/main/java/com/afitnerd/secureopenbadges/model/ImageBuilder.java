@@ -96,11 +96,12 @@ public class ImageBuilder {
         double aspectRatio = (double) width / image.getWidth();
         int height = (int) Math.ceil(image.getHeight() * aspectRatio);
 
-        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Image scaled = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
         resized.getGraphics().drawImage(scaled, 0, 0, null);
         return resized;
     }
+
     public byte[] build() throws IOException {
         String text = new Date().toString();
         AttributedString attributedText = new AttributedString(text);
