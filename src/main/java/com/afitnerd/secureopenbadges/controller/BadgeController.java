@@ -58,7 +58,8 @@ public class BadgeController {
     @GetMapping(value = BADGE_URI, produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getBadge(
         @PathVariable String githubUser, @PathVariable String githubRepo, @PathVariable String badgeSlug,
-        @RequestParam(required = false) String width, @RequestParam(required = false) String vPos,
+        @RequestParam(required = false) String width,
+        @RequestParam(required = false) String datePosition, @RequestParam(required = false) String userPosition,
         @RequestParam(required = false) String fontColor, @RequestParam(required = false) String fontSize,
         @RequestParam(required = false) String fontFamily, @RequestParam(required = false) String fontAttr
     ) {
@@ -69,12 +70,26 @@ public class BadgeController {
             List<Badge> badges = githubService.getBadge(commit, githubUser, githubRepo);
             Badge badge = badgeVerifierService.verify(badges, badgeSlug);
             log.info("Validated {} for {}/{}", badgeSlug, githubUser, githubRepo);
-            return imageService.getImage(badge.getBadgeSlug(), width, vPos, fontColor, fontSize, fontFamily, fontAttr);
+            return imageService.getImage(
+                badge.getBadgeSlug(), githubUser, width,
+                datePosition, userPosition, fontColor, fontSize, fontFamily, fontAttr, true
+            );
         } catch (IOException | InvalidBadgeException e) {
             log.error(
                 "Badge: {} not retrieved for {}/{}. Error: {}", badgeSlug, githubUser, githubRepo, e.getMessage(), e
             );
-            return notFound;
+            byte[] ret = notFound;
+            if (width != null) {
+                try {
+                    ret = imageService.getImage(
+                        "404", null, width, null, null,
+                        null, null, null, null, false
+                    );
+                } catch (IOException ioe) {
+                    log.error("Problem returning custom notFound image. Error: {}", ioe.getMessage(), ioe);
+                }
+            }
+            return ret;
         }
     }
 }

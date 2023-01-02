@@ -39,10 +39,26 @@ referenced.
 
 Badges are ultimately images that are returned (after validation) from a running instance of this project.
 
-The format is:
+The basic format is:
 
 ```
 https://<base url>/api/v1/user/<github user>/repo/<repo name>/badge/<badge slug>
+```
+
+The following query string parameters are supported:
+
+| param | acceptable values | default |
+|-------|-------------------|---------|
+| fontFamily | serif, sans_serif, monospaced, dialog, dialog_input | sans_serif |
+| fontSize | integer > 1  | 80 |
+| fontColor | white, light_gray, gray, dark_gray, black, red, pink, orange, yellow, green, magenta, cyan, blue | black |
+| fontAttr | plain, bold, italic, bold_italic | plain |
+| width | integer > 1 | default width of badge image |
+
+All of the query string parameters are optional. Here's an example:
+
+```
+http://localhost:8080/api/v1/user/afitnerd/repo/badge-test/badge/participation-trophy?fontColor=black&fontFamily=monospaced&fontSize=200&fontAttr=bold_italic&width=500
 ```
 
 The following checks are done before returning the badge:
@@ -135,3 +151,4 @@ the owner and committer are not the same, but that the committer is still in the
 one hand, a new signed commit could be made from a current authorized verifier. It might be useful to have a set of
 dates indicating start and end date of service for an authorized verifier.
 * It should be easier to add new badges without having to rebuild and redeploy the app
+* The Java image library as it's currently used does not preserve the transparent background of a png when overlaying username and date

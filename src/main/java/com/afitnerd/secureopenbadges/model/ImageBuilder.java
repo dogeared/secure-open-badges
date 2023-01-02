@@ -16,23 +16,31 @@ import static com.afitnerd.secureopenbadges.config.Constants.IMAGES_PATH;
 public class ImageBuilder {
 
     public enum VerticalPosition {
-        TOP, BOTTOM, MIDDLE
+        TOP, BOTTOM
     }
 
     private BufferedImage bi;
     private Font font;
     private Color fontColor;
-    private VerticalPosition verticalPosition;
+    private VerticalPosition datePosition;
+    private VerticalPosition userPosition;
     private Integer width;
+    private String user;
+    private boolean showDate = true;
 
     private ImageBuilder(){}
 
-    public static ImageBuilder start(String name) throws IOException {
-        InputStream is = ImageBuilder.class.getResourceAsStream(IMAGES_PATH + "/" + name + ".png");
+    public static ImageBuilder start(String badgeName) throws IOException {
+        InputStream is = ImageBuilder.class.getResourceAsStream(IMAGES_PATH + "/" + badgeName + ".png");
         if (is == null) { throw new IOException("Image Not Found!"); }
         ImageBuilder im = new ImageBuilder();
         im.bi = ImageIO.read(is);
         return im;
+    }
+
+    public ImageBuilder githubUser(String user) {
+        this.user = user;
+        return this;
     }
 
     public ImageBuilder font(String fontFamily, Integer fontAttribute, Integer fontSize) {
@@ -59,7 +67,7 @@ public class ImageBuilder {
             fontAttribute = Font.PLAIN;
         }
 
-        if (fontSize == null) {
+        if (fontSize == null || fontSize < 1) {
             fontSize = 80;
         }
         font = new Font(fontFamily, fontAttribute, fontSize);
@@ -74,11 +82,19 @@ public class ImageBuilder {
         return this;
     }
 
-    public ImageBuilder verticalPosition(VerticalPosition verticalPosition) {
-        if (verticalPosition == null) {
-            verticalPosition = VerticalPosition.BOTTOM;
+    public ImageBuilder datePosition(VerticalPosition datePosition) {
+        if (datePosition == null) {
+            datePosition = VerticalPosition.BOTTOM;
         }
-        this.verticalPosition = verticalPosition;
+        this.datePosition = datePosition;
+        return this;
+    }
+
+    public ImageBuilder userPosition(VerticalPosition userPosition) {
+        if (userPosition == null) {
+            userPosition = VerticalPosition.TOP;
+        }
+        this.userPosition = userPosition;
         return this;
     }
 
@@ -86,6 +102,11 @@ public class ImageBuilder {
         if (width != null) {
             this.width = width;
         }
+        return this;
+    }
+
+    public ImageBuilder shouldShowDate(boolean shouldShowDate) {
+        this.showDate = shouldShowDate;
         return this;
     }
 
@@ -102,13 +123,14 @@ public class ImageBuilder {
         return resized;
     }
 
-    public byte[] build() throws IOException {
-        String text = new Date().toString();
+    private void fitText(String text, VerticalPosition vPos) {
+        Graphics g = this.bi.getGraphics();
+        FontMetrics metrics = g.getFontMetrics(this.font);
+
         AttributedString attributedText = new AttributedString(text);
         attributedText.addAttribute(TextAttribute.FONT, this.font);
         attributedText.addAttribute(TextAttribute.FOREGROUND, this.fontColor);
-        Graphics g = this.bi.getGraphics();
-        FontMetrics metrics = g.getFontMetrics(this.font);
+
         GlyphVector vector = this.font.createGlyphVector(metrics.getFontRenderContext(), text);
         Shape outline = vector.getOutline(0, 0);
         double expectedWidth = outline.getBounds().getWidth();
@@ -119,22 +141,38 @@ public class ImageBuilder {
             double heightBasedFontSize = ((this.font.getSize2D()*this.bi.getHeight())/expectedHeight)-10;
 
             double newFontSize = Math.min(widthBasedFontSize, heightBasedFontSize);
-            font = this.font.deriveFont(this.font.getStyle(), (float)newFontSize);
-            metrics = g.getFontMetrics(this.font);
+            Font newFont = this.font.deriveFont(this.font.getStyle(), (float)newFontSize);
+            metrics = g.getFontMetrics(newFont);
             attributedText = new AttributedString(text);
-            attributedText.addAttribute(TextAttribute.FONT, this.font);
+            attributedText.addAttribute(TextAttribute.FONT, newFont);
             attributedText.addAttribute(TextAttribute.FOREGROUND, this.fontColor);
         }
-
         int positionX = (this.bi.getWidth() - metrics.stringWidth(text)) / 2;
         int positionY = (this.bi.getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
-        if (this.verticalPosition == VerticalPosition.TOP) {
+        if (vPos == VerticalPosition.TOP) {
             positionY = metrics.getAscent();
-        } else if (this.verticalPosition == VerticalPosition.BOTTOM) {
+        } else if (vPos == VerticalPosition.BOTTOM) {
             positionY =  bi.getHeight() - metrics.getHeight() + metrics.getAscent();
         }
 
         g.drawString(attributedText.getIterator(), positionX, positionY);
+    }
+
+    public byte[] build() throws IOException {
+        if (datePosition == userPosition) {
+            userPosition = VerticalPosition.TOP;
+            datePosition = VerticalPosition.BOTTOM;
+        }
+
+        if (showDate) {
+            String date = new Date().toString();
+            fitText(date, datePosition);
+        }
+
+        if (user != null) {
+            fitText(user, userPosition);
+        }
+
         this.bi = resizeImage(this.bi, this.width);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

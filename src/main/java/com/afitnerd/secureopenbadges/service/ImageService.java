@@ -6,7 +6,7 @@ public interface ImageService {
 
     byte[] getImage(String name) throws IOException;
     byte[] getImage(
-        String name, String width, String vPos,
-        String fontColor, String fontSize, String fontFamily, String fontAttr
+        String name, String githubUser, String width, String datePosition, String userPosition,
+        String fontColor, String fontSize, String fontFamily, String fontAttr, boolean shouldShowDate
     ) throws IOException;
 }
