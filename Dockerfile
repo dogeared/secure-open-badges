@@ -1,16 +1,12 @@
-#
-# Build stage
-#
-FROM maven:3.8.7-eclipse-temurin-19 AS build
-COPY src /home/app/src
-COPY pom.xml /home/app
-WORKDIR /home/app
-RUN mvn clean install
+FROM maven:3.8.7-eclipse-temurin-19 as build
+ENV HOME=/usr/app
+RUN mkdir -p $HOME
+WORKDIR $HOME
+ADD . $HOME
+RUN --mount=type=cache,target=/root/.m2 mvn -f $HOME/pom.xml clean package
 
-#
-# Package stage
-#
 FROM openjdk:19
-COPY --from=build /home/app/target ./target
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","./target/secure-open-badges-0.0.1-SNAPSHOT.jar"]
+RUN groupadd spring && useradd spring -g spring
+USER spring:spring
+COPY --from=build /usr/app/target/ /app/
+ENTRYPOINT java -jar /app/*.jar
