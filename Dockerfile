@@ -6,7 +6,12 @@ USER spring:spring
 #COPY ${DEPENDENCY}/META-INF /app/META-INF
 #COPY ${DEPENDENCY}/BOOT-INF/classes /app
 #ENTRYPOINT ["java","-cp","app:app/lib/*","com.afitnerd.secureopenbadges.SecureOpenBadgesApplication"]
-RUN ./mvnw clean install
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+WORKDIR /app
+
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline
+
+COPY src ./src
+
+CMD ["./mvnw", "spring-boot:run"]
