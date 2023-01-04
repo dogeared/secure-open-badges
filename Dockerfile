@@ -1,17 +1,16 @@
-FROM openjdk:19
-RUN groupadd spring && useradd spring -g spring
-USER spring:spring
-WORKDIR /app
+#
+# Build stage
+#
+FROM maven:3.8.7-eclipse-temurin-19 AS build
+COPY src /home/app/src
+COPY pom.xml /home/app
+WORKDIR /home/app
+RUN mvn clean install
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline
-COPY src ./src
-RUN ./mvnw clean install
-
+#
+# Package stage
+#
 FROM openjdk:19
-USER spring:spring
-WORKDIR /app
+COPY --from=build /home/app/target ./target
 EXPOSE 8080
-COPY --from=builder /app/target/*.jar /app/*.jar
-ENTRYPOINT ["java", "-jar", "/app/*.jar" ]
+ENTRYPOINT ["java","-jar","./target/secure-open-badges-0.0.1-SNAPSHOT.jar"]
