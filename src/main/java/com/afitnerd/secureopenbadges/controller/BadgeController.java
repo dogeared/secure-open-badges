@@ -5,6 +5,7 @@ import com.afitnerd.secureopenbadges.model.Badge;
 import com.afitnerd.secureopenbadges.service.BadgeVerifierService;
 import com.afitnerd.secureopenbadges.service.GithubService;
 import com.afitnerd.secureopenbadges.service.ImageService;
+import jakarta.annotation.PostConstruct;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
 import org.slf4j.Logger;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 

@@ -5,7 +5,7 @@ WORKDIR $HOME
 ADD . $HOME
 RUN --mount=type=cache,target=/root/.m2 mvn -f $HOME/pom.xml clean package
 
-FROM openjdk:19
+FROM openjdk:21-ea-2-jdk-slim
 RUN groupadd spring && useradd spring -g spring
 USER spring:spring
 COPY --from=build /usr/app/target/ /app/
